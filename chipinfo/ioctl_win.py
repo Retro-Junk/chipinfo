@@ -36,6 +36,9 @@ GENERIC_WRITE = 0x40000000
 GENERIC_EXECUTE = 0x20000000
 GENERIC_ALL = 0x10000000
 
+FILE_SHARE_READ = 0x00000001
+FILE_SHARE_WRITE = 0x00000002
+
 CREATE_NEW = 1
 CREATE_ALWAYS = 2
 OPEN_EXISTING = 3
@@ -134,9 +137,10 @@ class DeviceIoControl(object):
         self._fhandle = _CreateFile(
                 self.path,
                 GENERIC_READ | GENERIC_WRITE,
-                0,
+                FILE_SHARE_READ | FILE_SHARE_WRITE,
                 OPEN_EXISTING,
-                FILE_ATTRIBUTE_NORMAL | FILE_FLAG_NO_BUFFERING | FILE_FLAG_RANDOM_ACCESS)
+                0)
+                #FILE_ATTRIBUTE_NORMAL | FILE_FLAG_NO_BUFFERING | FILE_FLAG_RANDOM_ACCESS)
         self._validate_handle()
         return self
 
