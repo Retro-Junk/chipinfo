@@ -181,9 +181,19 @@ def GetCapacity(dctl):
 
 	return None
 
+class PointerSizeTest(ctypes.Structure):
+		_fields_ = [
+			('P', ctypes.POINTER(wintypes.BYTE))
+			]
+
 def ScsiRequest(dctl, cdb, data, dataIn=True):
 	SenseLength = 24
-	class SCSI_PASS_THROUGH_DIRECT_WITH_SENSE(ctypes.Structure):
+	class SCSI_SENSE_DATA(ctypes.Structure):
+		_fields_ = [
+			('Data', wintypes.BYTE * SenseLength)
+		]
+
+	class SCSI_PASS_THROUGH_DIRECT(ctypes.Structure):
 		_fields_ = [
 			('Length', wintypes.USHORT),
 			('ScsiStatus', wintypes.BYTE),
@@ -198,10 +208,17 @@ def ScsiRequest(dctl, cdb, data, dataIn=True):
 			('TimeOutValue', wintypes.DWORD),
 			('DataBuffer', ctypes.POINTER(wintypes.BYTE)),
 			('SenseInfoOffset', wintypes.DWORD),
-			('Cdb', wintypes.BYTE * 16),
-			#('Padding2C', wintypes.BYTE * 4),
+			('Cdb', wintypes.BYTE * 16)
+			]
+
+	class SCSI_PASS_THROUGH_DIRECT_WITH_SENSE(SCSI_PASS_THROUGH_DIRECT):
+		_fields_ = [
 			('Sense', wintypes.BYTE * SenseLength)
 			]
+
+	#print("0x%X"%(ctypes.sizeof(SCSI_PASS_THROUGH_DIRECT)))
+	#print("0x%X"%(ctypes.sizeof(SCSI_PASS_THROUGH_DIRECT_WITH_SENSE)))
+	#print("0x%X"%(SCSI_PASS_THROUGH_DIRECT_WITH_SENSE.Sense.offset))
 
 	IOCTL_SCSI_PASS_THROUGH_DIRECT = 0x4D014
 
@@ -211,7 +228,7 @@ def ScsiRequest(dctl, cdb, data, dataIn=True):
 			buf[i] = data[i] & 0xFF
 
 	pass_through = SCSI_PASS_THROUGH_DIRECT_WITH_SENSE()
-	pass_through.Length = SCSI_PASS_THROUGH_DIRECT_WITH_SENSE.Sense.offset
+	pass_through.Length = ctypes.sizeof(SCSI_PASS_THROUGH_DIRECT)
 	pass_through.CdbLength = 16
 	pass_through.SenseInfoLength = SenseLength
 	pass_through.DataIn = 1 if dataIn == True else 0
@@ -219,6 +236,13 @@ def ScsiRequest(dctl, cdb, data, dataIn=True):
 	pass_through.DataTransferLength = len(buf)
 	pass_through.TimeOutValue = 5
 	pass_through.SenseInfoOffset = SCSI_PASS_THROUGH_DIRECT_WITH_SENSE.Sense.offset #0x30 #pass_through.Sense.offset
+
+	# validate structure size
+	if (ctypes.sizeof(PointerSizeTest) == 4 and pass_through.Length == 0x2C) \
+	or (ctypes.sizeof(PointerSizeTest) == 8 and pass_through.Length == 0x38):
+			pass
+	else:
+			raise Exception("Invalid SPTD structure size 0x%X, 0x%X"%(pass_through.Length, ctypes.sizeof(SCSI_PASS_THROUGH_DIRECT_WITH_SENSE)))
 
 	for i in range(len(cdb)):
 		if i >= 16:
@@ -231,7 +255,7 @@ def ScsiRequest(dctl, cdb, data, dataIn=True):
 
 	status, _ = dctl.ioctl(IOCTL_SCSI_PASS_THROUGH_DIRECT,
 			p_pass_through, ctypes.sizeof(SCSI_PASS_THROUGH_DIRECT_WITH_SENSE),
-			p_pass_through, ctypes.sizeof(SCSI_PASS_THROUGH_DIRECT_WITH_SENSE))                                      
+			p_pass_through, ctypes.sizeof(SCSI_PASS_THROUGH_DIRECT_WITH_SENSE))
 
 	#print(status, pass_through.ScsiStatus, pass_through.Sense[0])
 
