@@ -27,9 +27,13 @@
 vendors = {
 	0x98: ("Toshiba", 8),
 	0x45: ("Sandisk", 8),
-	0x2C: ("Intel/Micron", 8),
+	0x2C: ("Micron/SpecTek", 8),
+	0x89: ("Intel", 6),
 	0xEC: ("Samsung", 6),
 	0xAD: ("Hynix", 8),
+	0x20: ("ST", 4),
+	0x07: ("Renesas", 4),
+	0xC1: ("Infineon", 4),
 	0xC2: ("Macronix", 6)
 	}
 

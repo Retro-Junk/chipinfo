@@ -186,7 +186,7 @@ class PointerSizeTest(ctypes.Structure):
 			('P', ctypes.POINTER(wintypes.BYTE))
 			]
 
-def ScsiRequest(dctl, cdb, data, dataIn=True):
+def ScsiRequest(dctl, cdb, data, dataIn=True, mayFail=False):
 	SenseLength = 24
 	class SCSI_SENSE_DATA(ctypes.Structure):
 		_fields_ = [
@@ -267,6 +267,7 @@ def ScsiRequest(dctl, cdb, data, dataIn=True):
 		else:
 			return True
 	else:
-		raise Exception('SCSI request failure. GetLastError(): %d, ScsiStatus: %d' % (windll.kernel32.GetLastError(), pass_through.ScsiStatus))
+		if mayFail == False:
+			raise Exception('SCSI request failure. GetLastError(): %d, ScsiStatus: %d' % (windll.kernel32.GetLastError(), pass_through.ScsiStatus))
 	
 	return None

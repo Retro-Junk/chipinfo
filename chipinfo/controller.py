@@ -78,6 +78,8 @@ def GetPlugins():
 """
 def DetectController(dctl, verbose=False):
 	inquiry = scsi.Inquiry(dctl)
+	if verbose:
+		open("_inq_12.bin", "wb+").write(bytearray(inquiry))
 
 	for pn in plugins:
 		plugin = plugins[pn]

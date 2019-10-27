@@ -34,8 +34,10 @@ Device = ioctl_win.DeviceIoControl
 
 # CDB helper class
 class CDB:
-	def __init__(self, size=16):
+	def __init__(self, size=16, cdb=[]):
 		self.cdb = [0] * size
+		for i in range(min(len(cdb), size)):
+			self.cdb[i] = cdb[i]
 
 	def Put(self, offset, value, size=0, little=True):
 		if size == 0:

@@ -33,7 +33,7 @@ import scsi
 import controller
 import flash
 
-_version = "ChipInfo v0.2 *ALPHA* by VL // 2019/10/13"
+_version = "ChipInfo/CHIE v0.3 *ALPHA* by VL // 2019/10/27"
 
 def ProcessDevice(deviceName, report=[], verbose=False, friendlyName=""):
 
