@@ -1,4 +1,4 @@
-Chip Information Extractor
+Chip Information Extractor (CHIE)
 By VL, 2019
 
 This program tries to extract information about internal hardware and software
@@ -27,8 +27,8 @@ Usage:
 chipinfo.py devicename
 
 where devicename is a disk drive letter (Windows) or device path (/dev/... on linux).
-Admin/su rights may be required for certain functions. Make sure device is not used
-by other programs while testing it with CIEX.
+Admin/su rights may be required for certain functions. Make sure the device is not
+in use by other programs while testing it with CHIE.
 
 
 Disclaimer:
@@ -41,5 +41,6 @@ at your own risk!
 
 History:
 
+2010/10/27 v0.3 - Alcor UFD controllers support
 2010/10/13 v0.2 - Command line parameters handling
-2019/10/06 v0.1 - Basic prototype version, SMI and Phison support
+2019/10/06 v0.1 - Basic prototype version, SMI and Phison UFD controllers support
