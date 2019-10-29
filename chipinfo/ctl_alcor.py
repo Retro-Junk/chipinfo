@@ -56,11 +56,16 @@ def Detect(dctl, inquiry, force=False, verbose=False):
 	_verbose = verbose
 
 	# old models
+	if len(inquiry) > 0x23:
+		if  inquiry[0x20] == ord('7') \
+		and inquiry[0x21] == ord('.') \
+		and inquiry[0x22] == ord('7'):
+			return Alcor()
+
 	if len(inquiry) > 0x24:
 		if  inquiry[0x20] == ord('8') \
 		and inquiry[0x21] == ord('.') \
-		and inquiry[0x22] == ord('0') \
-		and inquiry[0x23] in [ord('0'), ord('1'), ord('7')]:
+		and inquiry[0x22] == ord('0'):
 			return Alcor()
 
 	if _verbose:
